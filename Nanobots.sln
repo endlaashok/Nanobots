@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nanobots.CSharp.Plugins", "Nanobots.CSharp.Plugins.csproj", "{474154EE-3FD3-4F32-E10D-FA007156F14B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nanobots.CSharp", "Nanobots.CSharp.csproj", "{84A30012-C64E-A5A0-B48D-61C159274A14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nanobots.CSharp.Editor", "Nanobots.CSharp.Editor.csproj", "{028769CC-7925-644B-C15E-01F829CAA213}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{474154EE-3FD3-4F32-E10D-FA007156F14B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{474154EE-3FD3-4F32-E10D-FA007156F14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{474154EE-3FD3-4F32-E10D-FA007156F14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{474154EE-3FD3-4F32-E10D-FA007156F14B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84A30012-C64E-A5A0-B48D-61C159274A14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84A30012-C64E-A5A0-B48D-61C159274A14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84A30012-C64E-A5A0-B48D-61C159274A14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84A30012-C64E-A5A0-B48D-61C159274A14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028769CC-7925-644B-C15E-01F829CAA213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028769CC-7925-644B-C15E-01F829CAA213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028769CC-7925-644B-C15E-01F829CAA213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028769CC-7925-644B-C15E-01F829CAA213}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
