@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class AIEngine : MonoBehaviour {
 
-    //public bool goodBacteria;
-    //public bool badBacteria;
-    //public bool Virus;
-    //public bool rbc;
-    //public bool wbc;
 
     public bool EnemygoodBacteria;
     public bool EnemybadBacteria;
@@ -17,21 +13,46 @@ public class AIEngine : MonoBehaviour {
     public bool Enemywbc;
     public bool EnemyNanobot;
 
+    private GameObject closest;
+    private float distance;
+
     public float movespeed = 10.0f;
     public float rotationspeed = 10.0f;
 
-    Character Enemy = new Character("");
-    Character CurrentCharacter = new Character("");
 
-    // Use this for initialization
+    public string[] EnemyType = new string[] { "goodBacteria", "badBacteria", "virus", "rbc", "wbc", "nanobot" };
+    //public int Health = 100;
+    public bool IsAI = false;
+    int TresholdHealth = 50;
 
-    //to keep track of the distance for random movements
-    private float lastXposition;
-    private float lastZposition;
+    //public bool goodBacteria = false, badBacteria = false, virus = false, rbc = false, wbc = false, nanobot = false;
+
+    //for random movements
+    float wall_left = -5.0f;
+    float wall_right = 5.0f;
+    float wall_top = -5.0f;
+    float wall_bottom = 5.0f;
+    Vector3 AI_Position;
+    float MoveSpeed = 0.05f;
+    //Get two Random values within a Range (Screen dimensions)
+    float randomX;
+    float randomY;
+    float randomZ;
+
+    private GameObject[] genericObjects;
+    private static int[] stateMachine = { 0,1,2};
+    private int currentState = stateMachine[0];
+    Dictionary<string, int> health = GameManager.Health;
+
     void Start () {
-        //GameObject closest = FindClosestNPC();
-        //Debug.Log(closest.name);
+       
+        randomX = Random.Range(0, 10);
+         randomY = Random.Range(0, 10);
+        randomZ = Random.Range(0, 10);
 
+        randomX = randomX + this.transform.position.x;
+        randomY = randomY + this.transform.position.y;
+        randomZ = randomZ + this.transform.position.z;
 
     }
 
@@ -39,11 +60,9 @@ public class AIEngine : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-
-        
-       
-        InteraxtWithNPC();
-
+        //  InteraxtWithNPC();
+        AI_Position = this.transform.position;
+        RandomMovements();
         #region commentedcode
         // transform.Translate(Vector3.forward * speed * Time.deltaTime);
         //GameObject closest = FindClosestNPC();
@@ -60,7 +79,6 @@ public class AIEngine : MonoBehaviour {
         //transform.position += transform.forward * Time.deltaTime * movespeed;
 
         #endregion
-
     }
 
     void FixedUpdate()
@@ -69,80 +87,143 @@ public class AIEngine : MonoBehaviour {
     }
 
 
+    void RandomMovements()
+    {
+        Vector3 randomXYZ = new Vector3(randomX, 0,randomZ);
+        Vector3 Direction = randomXYZ - AI_Position;
+
+        //Normalize the Direction to apply appropriatly
+        Direction = Direction.normalized;
+
+        if ( AI_Position.x > wall_left && AI_Position.x < wall_right
+         &&
+         AI_Position.z < wall_bottom && AI_Position.z > wall_top)
+        {
+            //Make AI move in the Direction (adjust speed to your needs)
+            transform.position += randomXYZ * MoveSpeed;
+        }
+        else
+        {
+            //make your AI do something when its not within the boundaries
+            //maybe generate a new direction?
+        }
+    }
+
+
     void InteraxtWithNPC()
     {
-
-        List<GameObject> enemy = new List<GameObject>();
-        List<Character> enemies = new List<Character>();
-        //enemy. = UnityEngine.Object.FindObjectsOfType<GameObject>();
-
+        
         if (EnemygoodBacteria)
-        {
-            enemy.Add(GameObject.Find("goodBacteria"));
-        }
-        if (EnemybadBacteria)
-        {
-            enemy.Add(GameObject.Find("badBacteria"));
-        }
-            if (EnemyVirus)
-        {
-            enemy.Add(GameObject.Find("virus"));
-        }
-            if (Enemyrbc)
-        {
-            enemy.Add(GameObject.Find("rbc"));
-        }
-            if (Enemywbc)
-        {
-            enemy.Add(GameObject.Find("wbc"));
-        }
-                if (EnemyNanobot)
-        {
-            enemy.Add(GameObject.Find("nanobot"));
+        { 
+            //{ genericObjects = GameManager.enemyType1;
+            genericObjects.Concat(GameManager.enemyType1).ToArray();
         }
 
-        GameObject closest = FindClosestNPC(enemies);
-        //Debug.Log(closest.name);
-
-
-        int TresholdHealth = 50;
-
-        if (Enemy.Health > TresholdHealth)
-        {
-            if (CurrentCharacter.Health > TresholdHealth)
+            else if (EnemybadBacteria)
             {
-                Chase(closest);
+            //genericObjects =  GameManager.enemyType2;
+            genericObjects.Concat(GameManager.enemyType2).ToArray();
+        }
+
+            else if (EnemyVirus)
+            { //genericObjects = GameManager.enemyType3; 
+            genericObjects.Concat(GameManager.enemyType3).ToArray();
+        }
+
+            else if (Enemyrbc)
+            { //genericObjects = GameManager.enemyType4; 
+            genericObjects.Concat(GameManager.enemyType4).ToArray();
+        }
+
+            else if (Enemywbc)
+            { //genericObjects = GameManager.enemyType5; 
+            genericObjects.Concat(GameManager.enemyType5).ToArray();
+        }
+
+            else if (EnemyNanobot)
+            { //genericObjects = GameManager.enemyType6;
+            genericObjects.Concat(GameManager.enemyType6).ToArray();
+        }
+
+         closest= FindClosestNPC(genericObjects);
+
+        if (health[closest.gameObject.name]  > TresholdHealth)
+        {
+            if (health[this.gameObject.name] > TresholdHealth)
+            {
+                currentState = stateMachine[1];
             }
-            else if (CurrentCharacter.Health < TresholdHealth)
+            else if (health[this.gameObject.name] < TresholdHealth)
             {
-                Run(Enemy);
-            }
-        }
-
-       else if (Enemy.Health < TresholdHealth)
-        {
-            if (CurrentCharacter.Health > Enemy.Health)
-            {
-                Chase(closest);
-            }
-            else if (CurrentCharacter.Health < Enemy.Health)
-            {
-                Run(Enemy);
+                currentState = stateMachine[2];
             }
         }
 
-        Chase(closest);
+       else if (health[closest.gameObject.name] < TresholdHealth)
+        {
+            if (health[this.gameObject.name] > health[closest.gameObject.name])
+            {
+                currentState = stateMachine[1];
+            }
+            else if (health[this.gameObject.name] < health[closest.gameObject.name])
+            {
+                currentState = stateMachine[2];
+            }
+        }
+
+        //Chase(closest);
+        ActionBasedonState();
     }
 
-    void Run(Character enemy)
+    void ActionBasedonState()
     {
+        if (currentState == 1)
+        {
+            Chase(closest);
+        }
+        else if (currentState == 2)
+        {
+            Run(closest);
+        }
 
+        else if (currentState == 0)
+        {
+            RandomMovements();
+        }
+        
     }
+
+    GameObject FindClosestNPC(GameObject[] enemyList)
+    {
+        GameObject _closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = this.transform.position;
+        foreach (GameObject go in genericObjects)
+        {
+                float diff = Vector3.Distance(go.transform.position, this.transform.position);
+                float curDistance = diff;
+                if (curDistance < distance && curDistance != 0 && NotInSameGameObject(go, this.gameObject))
+                {
+                _closest = go;
+                    distance = curDistance;
+                }
+
+        }
+        return _closest;
+    }
+
+     bool NotInSameGameObject(GameObject currentObj, GameObject referenceObj)
+    {
+        if (currentObj.transform.root.gameObject != referenceObj.transform.root.gameObject)
+        {
+            return true;
+        }
+        else return false;
+    }
+
 
     void Chase(GameObject closest)
     {
-        //Vector3 targetDirection = closest.transform.position - transform.position;
-        //transform.position += targetDirection * movespeed * Time.deltaTime;
 
         float step = movespeed * Time.deltaTime;
         float distance = Vector3.Distance(closest.transform.position, transform.position);
@@ -155,55 +236,31 @@ public class AIEngine : MonoBehaviour {
 
     void Run(GameObject closest)
     {
-        //Vector3 targetDirection = closest.transform.position - transform.position;
-        //transform.position += targetDirection * movespeed * Time.deltaTime;
 
-        float step = movespeed * Time.deltaTime; 
+        float step = -movespeed * Time.deltaTime; 
         float distance = Vector3.Distance(closest.transform.position, transform.position);
 
-        if (distance > 8)
+        if (distance < 15)
         {
             transform.position = Vector3.MoveTowards(transform.position, closest.transform.position, step);
         }
     }
 
-    bool NotInSameGameObject(Character currentObj, Character referenceObj)
-    {
-        if (currentObj != referenceObj)
-        {
-            return true;
 
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("colloid");
+
+        if (collision.transform.gameObject.name == "Bullet")
+        {
+            ContactPoint contact = collision.contacts[0];
+            Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
+            Vector3 pos = contact.point;
+            //Instantiate(explosionPrefab, pos, rot);
+            Destroy(collision.transform.gameObject);
         }
-        else return false;
     }
 
-    GameObject FindClosestNPC(List<Character> enemyList)
-    {
-        Character[] gos;
-         gos = UnityEngine.Object.FindObjectsOfType<Character>();
-
-        // gos = GameObject.FindGameObjectsWithTag("Enemy");
-        Character closest = null;
-        float distance = Mathf.Infinity;
-        Vector3 position = transform.position;
-        foreach (Character go in gos)
-        {
-            if (enemyList.Contains(go))
-            {
-                float diff = Vector3.Distance(go.transform.position, transform.position);
-                float curDistance = diff;
-                if (curDistance < distance && curDistance != 0 && NotInSameGameObject(go, CurrentCharacter))
-                {
-                    closest = go;
-                    distance = curDistance;
-                }
-            }
-            else continue;
-
-        }
-       // Debug.Log(distance);
-        return closest.transform.root.gameObject;
-    }
 
 
 }
